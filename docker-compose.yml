@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  jobber:
+    image: richtr/docker-jobber
+    name: docker-jobber
+    volumes:
+      - /my/jobber:/root/.jobber:ro

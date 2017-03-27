@@ -4,9 +4,17 @@ A minimal setup for running [Jobber](https://dshearer.github.io/jobber/) via [Su
 
 ## Usage
 
-    $ docker run -d --name my-docker-jobber -v $HOME/.jobber:/root/.jobber:ro richtr/docker-jobber
+Pulling the images from [Dockerhub](https://hub.docker.com/):
 
-where `$HOME/.jobber` is the path to your [.jobber YAML file](https://dshearer.github.io/jobber/doc/v1.1/#/defining-jobs) on the Docker host machine.
+    $ docker pull richtr/docker-jobber        # Ubuntu image
+    $ docker pull richtr/docker-jobber:alpine # Alpine image
+
+Jobber needs a `.jobber` file to schedule tasks to run.
+
+The `richtr/docker-jobber` and `richtr/docker-jobber:alpine` images simplify the process by adding an ONBUILD task to copy a configuration file called `.jobber` in the same directory as the `Dockerfile`.
+
+    $ touch .jobber # Add your jobber tasks to run
+    $ docker run --name my-docker-jobber richtr/docker-jobber
 
 To view the latest jobber activity on the running Docker container we can use `docker logs <CONTAINER>`:
 
@@ -14,13 +22,10 @@ To view the latest jobber activity on the running Docker container we can use `d
 
 ## Docker Compose
 
-You can use this project to create your own Docker Jobber images by creating a `Dockerfile` as follows:
+You can use this project to create your own images by adding a `.jobber` file to the same directory as your `docker-compose.yml` file and simply using `FROM richtr/docker-jobber` or `FROM richtr/docker-jobber:alpine`.
 
 ``` yaml
 FROM richtr/docker-jobber
-
-# Copy the .jobber configuration to the server
-ADD /my/.jobber /root/.jobber
 
 # ...
 ```

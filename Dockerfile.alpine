@@ -1,0 +1,11 @@
+FROM enil/alpine-supervisord-onbuild
+
+ENV JOBBER_URL https://github.com/dshearer/jobber/releases/download/v1.1/jobber-1.1-r0.apk
+
+ADD $JOBBER_URL /tmp/jobber.apk
+
+RUN apk add openrc bash --no-cache && \
+    (apk add --allow-untrusted /tmp/jobber.apk ||:) && \
+    rm -f /tmp/jobber.apk
+
+ONBUILD COPY .jobber /root/.jobber

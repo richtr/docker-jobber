@@ -10,9 +10,11 @@ RUN apt-get update \
 
 ENV JOBBER_URL https://github.com/dshearer/jobber/releases/download/v1.1/jobber_1.1-1_amd64.deb
 
-ADD $JOBBER_URL /tmp/jobber_pkg.deb
+ADD $JOBBER_URL /tmp/jobber.deb
 
-RUN dpkg -i /tmp/jobber_pkg.deb \
-    && rm -f /tmp/jobber_pkg.deb
+RUN dpkg -i /tmp/jobber.deb \
+    && rm -f /tmp/jobber.deb
 
-ADD jobber.conf /etc/supervisor/conf.d/jobber.conf
+ADD supervisord.conf /etc/supervisor/supervisord.conf
+
+ONBUILD COPY .jobber /root/.jobber

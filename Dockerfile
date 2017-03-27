@@ -17,4 +17,8 @@ RUN dpkg -i /tmp/jobber.deb \
 
 ADD supervisord.conf /etc/supervisor/supervisord.conf
 
+# forward request and error logs to docker log collector
+RUN ln -sf /dev/stdout /var/log/jobber.out.log
+RUN ln -sf /dev/stderr /var/log/jobber.err.log
+
 ONBUILD COPY .jobber /root/.jobber

@@ -4,9 +4,9 @@ A minimal setup for running [Jobber](https://dshearer.github.io/jobber/) via [Su
 
 ## Usage
 
-    $ docker run -d --name my-docker-jobber -v /my/.jobber:/root/.jobber:ro richtr/docker-jobber
+    $ docker run -d --name my-docker-jobber -v $HOME/.jobber:/root/.jobber:ro richtr/docker-jobber
 
-where `/my/.jobber` is the path to your [.jobber YAML file](https://dshearer.github.io/jobber/doc/v1.1/#/defining-jobs) on the Docker host machine.
+where `$HOME/.jobber` is the path to your [.jobber YAML file](https://dshearer.github.io/jobber/doc/v1.1/#/defining-jobs) on the Docker host machine.
 
 To view the latest jobber activity on the running Docker container we can use `docker logs <CONTAINER>`:
 

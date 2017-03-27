@@ -9,7 +9,7 @@ Pulling the images from [Dockerhub](https://hub.docker.com/):
     $ docker pull richtr/docker-jobber        # Ubuntu image
     $ docker pull richtr/docker-jobber:alpine # Alpine image
 
-Jobber needs a `.jobber` file to schedule tasks to run. You can attach it as a volume with `docker run`.
+Jobber needs a `.jobber` file to schedule tasks to run. You can attach it at `/root/.jobber` in the container with a volume:
 
 ``` bash
 $ echo "---
@@ -26,12 +26,13 @@ To view the latest jobber activity on the running Docker container we can use `d
 
 ## Docker Compose
 
-The `richtr/docker-jobber` and `richtr/docker-jobber:alpine` images simplify the process by adding an ONBUILD task to copy a configuration file called `.jobber` in the same directory as the `Dockerfile`.
 
-You can use this project to create your own images by adding a `.jobber` file to the same directory as your `docker-compose.yml` file and simply using `FROM richtr/docker-jobber` or `FROM richtr/docker-jobber:alpine`.
+You can use this project to create your own images by adding a `.jobber` file to the same directory as your `docker-compose.yml` file and simply add your own .jobber file with your image:
 
 ``` yaml
 FROM richtr/docker-jobber
+
+ADD .jobber /root/.jobber
 
 # ...
 ```

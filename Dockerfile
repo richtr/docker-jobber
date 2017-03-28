@@ -45,7 +45,6 @@ RUN apk del libc-dev go git curl wget make && \
 RUN ln -sf /dev/stdout /var/log/jobber.out.log
 RUN ln -sf /dev/stderr /var/log/jobber.err.log
 
-COPY config /tmp/config
-COPY jobber-entrypoint.sh /jobber-entrypoint.sh
+COPY supervisord.conf /etc/supervisord.conf
 
-ENTRYPOINT ["/jobber-entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/supervisord", "--configuration", "/etc/supervisord.conf"]

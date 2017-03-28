@@ -6,8 +6,7 @@ A minimal setup for running [Jobber](https://dshearer.github.io/jobber/) via [Su
 
 Pulling the images from [Dockerhub](https://hub.docker.com/):
 
-    $ docker pull richtr/docker-jobber        # Ubuntu image
-    $ docker pull richtr/docker-jobber:alpine # Alpine image
+    $ docker pull richtr/docker-jobber
 
 Jobber needs a `.jobber` file to schedule tasks to run. You can attach it at `/root/.jobber` in the container with a volume:
 

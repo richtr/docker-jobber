@@ -1,22 +1,51 @@
-FROM richtr/supervisor
+FROM alpine:3.5
 
-ENV DEBIAN_FRONTEND noninteractive
+# Build parameters
+ARG JOBBER_VERSION=v1.1
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y init-system-helpers \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && echo exit 0 > /usr/sbin/policy-rc.d
+# Install Jobber from source
+RUN export JOBBER_HOME=/tmp/jobber && \
+    export JOBBER_LIB=$JOBBER_HOME/lib && \
+    export GOPATH=$JOBBER_LIB && \
+    export CONTAINER_UID=1000 && \
+    export CONTAINER_GID=1000 && \
+    export CONTAINER_USER=jobber_client && \
+    export CONTAINER_GROUP=jobber_client && \
+    # Install tools
+    apk add --update libc-dev go git curl wget make && \
+    mkdir -p $JOBBER_HOME && \
+    mkdir -p $JOBBER_LIB && \
+    # Install Jobber
+    addgroup -g $CONTAINER_GID jobber_client && \
+    adduser -u $CONTAINER_UID -G jobber_client -s /bin/bash -S jobber_client && \
+    cd $JOBBER_LIB && \
+    go get github.com/dshearer/jobber;true && \
+    if  [ "${JOBBER_VERSION}" != "latest" ]; \
+      then \
+        # wget --directory-prefix=/tmp https://github.com/dshearer/jobber/releases/download/v1.1/jobber-${JOBBER_VERSION}-r0.x86_64.apk && \
+        # apk add --allow-untrusted /tmp/jobber-${JOBBER_VERSION}-r0.x86_64.apk ; \
+        cd src/github.com/dshearer/jobber && \
+        git checkout tags/${JOBBER_VERSION} && \
+        cd $JOBBER_LIB ; \
+    fi && \
+    make -C src/github.com/dshearer/jobber install DESTDIR=$JOBBER_HOME && \
+    cp $JOBBER_LIB/bin/jobber /usr/bin/ && \
+    cp -p $JOBBER_LIB/bin/jobberd /usr/sbin/jobberd
 
-ENV JOBBER_URL https://github.com/dshearer/jobber/releases/download/v1.1/jobber_1.1-1_amd64.deb
+# Install supervisord (+ bash for docker exec access)
+RUN apk --no-cache add supervisor bash
 
-ADD $JOBBER_URL /tmp/jobber.deb
+# Cleanup
+RUN apk del libc-dev go git curl wget make && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /tmp/* && \
+    rm -rf /var/log/*
 
-RUN dpkg -i /tmp/jobber.deb \
-    && rm -f /tmp/jobber.deb
-
-ADD supervisord.conf /etc/supervisor/supervisord.conf
-
-# forward request and error logs to docker log collector
+# Forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /var/log/jobber.out.log
 RUN ln -sf /dev/stderr /var/log/jobber.err.log
+
+COPY config /tmp/config
+COPY jobber-entrypoint.sh /jobber-entrypoint.sh
+
+ENTRYPOINT ["/jobber-entrypoint.sh"]

@@ -47,4 +47,5 @@ RUN ln -sf /dev/stderr /var/log/jobber.err.log
 
 COPY supervisord.conf /etc/supervisord.conf
 
-ENTRYPOINT ["/usr/bin/supervisord", "--configuration", "/etc/supervisord.conf"]
+# No entrypoint set as this image is meant to be extended. You can run in your own Dockerfile:
+#ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
